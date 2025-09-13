@@ -1,0 +1,164 @@
+/* src/styles/Drills.css */
+.drills-page {
+  padding: var(--spacing-md);
+}
+
+.page-description {
+  color: var(--color-text-light);
+  margin-bottom: var(--spacing-2xl);
+  text-align: center;
+  font-size: var(--font-size-lg);
+}
+
+.drills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.drill-card {
+  background-color: var(--color-card);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.drill-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.drill-content {
+  padding: var(--spacing-lg);
+}
+
+.drill-card h3 {
+  color: var(--color-text);
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-xl);
+}
+
+.drill-description {
+  color: var(--color-text-light);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.5;
+}
+
+.drill-meta {
+  margin-bottom: var(--spacing-lg);
+}
+
+.duration {
+  background-color: #e8f4fd;
+  color: var(--color-primary);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+}
+
+.start-drill-btn {
+  display: inline-block;
+  background-color: var(--color-success);
+  color: white;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border: none;
+  border-radius: var(--border-radius-md);
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  width: 100%;
+}
+
+.start-drill-btn:hover {
+  background-color: var(--color-success-dark);
+}
+
+.active-drill {
+  background-color: var(--color-card);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.active-drill h3 {
+  color: var(--color-text);
+  margin-bottom: var(--spacing-lg);
+  font-size: var(--font-size-xl);
+}
+
+.drill-timer {
+  margin-bottom: var(--spacing-xl);
+}
+
+.timer-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  font-weight: bold;
+  font-size: var(--font-size-lg);
+}
+
+.drill-instructions {
+  text-align: left;
+  margin-bottom: var(--spacing-xl);
+}
+
+.drill-instructions h4 {
+  color: var(--color-text);
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-lg);
+}
+
+.drill-instructions ol {
+  margin-left: var(--spacing-lg);
+}
+
+.drill-instructions li {
+  margin-bottom: var(--spacing-sm);
+  line-height: 1.5;
+}
+
+.cancel-drill-btn {
+  background-color: var(--color-emergency);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.cancel-drill-btn:hover {
+  background-color: var(--color-emergency-dark);
+}
+
+@media (max-width: 768px) {
+  .drills-grid {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+  
+  .drill-content {
+    padding: var(--spacing-md);
+  }
+  
+  .active-drill {
+    padding: var(--spacing-lg);
+  }
+  
+  .drill-instructions ol {
+    margin-left: var(--spacing-md);
+  }
+}

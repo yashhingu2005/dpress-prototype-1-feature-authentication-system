@@ -1,0 +1,29 @@
+/* src/styles/Layout.css */
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-md);
+  width: 100%;
+}
+
+/* Ensure proper spacing for fixed header */
+body {
+  padding-top: 80px;
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-top: 120px;
+  }
+  
+  .main-content {
+    padding: var(--spacing-sm);
+  }
+}

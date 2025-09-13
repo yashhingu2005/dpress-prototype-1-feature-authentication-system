@@ -1,0 +1,67 @@
+/* src/styles/NotFound.css */
+.not-found {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+    padding: var(--spacing-md);
+  }
+  
+  .not-found-content {
+    background-color: var(--color-card);
+    border-radius: var(--border-radius-xl);
+    box-shadow: var(--shadow-xl);
+    padding: var(--spacing-2xl);
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+  }
+  
+  .not-found h1 {
+    font-size: 6rem;
+    color: var(--color-primary);
+    margin: 0;
+    line-height: 1;
+  }
+  
+  .not-found h2 {
+    font-size: var(--font-size-2xl);
+    color: var(--color-text);
+    margin: var(--spacing-sm) 0;
+  }
+  
+  .not-found p {
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-xl);
+    font-size: var(--font-size-md);
+  }
+  
+  .not-found-actions {
+    margin-top: var(--spacing-lg);
+  }
+  
+  .home-button {
+    display: inline-block;
+    background-color: var(--color-primary);
+    color: white;
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-radius: var(--border-radius-md);
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color var(--transition-fast);
+  }
+  
+  .home-button:hover {
+    background-color: var(--color-primary-dark);
+  }
+  
+  @media (max-width: 768px) {
+    .not-found-content {
+      padding: var(--spacing-lg);
+    }
+    
+    .not-found h1 {
+      font-size: 4rem;
+    }
+  }

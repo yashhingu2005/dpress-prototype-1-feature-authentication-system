@@ -1,0 +1,67 @@
+/* src/styles/EarlyWarning.css */
+.early-warning {
+    background-color: #e74c3c;
+    color: white;
+    padding: 1rem;
+    border-bottom: 3px solid #c0392b;
+    animation: blinkWarning 2s infinite;
+  }
+  
+  .warning-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .warning-icon {
+    font-size: 2rem;
+    margin-right: 1rem;
+  }
+  
+  .warning-text {
+    flex: 1;
+  }
+  
+  .warning-text h3 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.2rem;
+  }
+  
+  .warning-text p {
+    margin: 0;
+    font-size: 1rem;
+  }
+  
+  .warning-alert {
+    background-color: #c0392b;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: bold;
+    animation: pulse 1.5s infinite;
+  }
+  
+  /* Blinking animation for the entire banner */
+  @keyframes blinkWarning {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+  }
+  
+  /* Pulsing animation for the ALERT badge */
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  
+  @media (max-width: 768px) {
+    .warning-content {
+      flex-direction: column;
+      text-align: center;
+      gap: 0.5rem;
+    }
+    
+    .warning-icon {
+      margin-right: 0;
+    }
+  }

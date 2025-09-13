@@ -1,0 +1,127 @@
+/* src/styles/ModuleDetails.css */
+.module-details {
+  padding: var(--spacing-md);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.back-link {
+  display: inline-block;
+  color: var(--color-primary);
+  text-decoration: none;
+  margin-bottom: var(--spacing-md);
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.back-link:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+.module-header {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.module-header h2 {
+  color: var(--color-text);
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-2xl);
+}
+
+.module-description {
+  color: var(--color-text-light);
+  font-size: var(--font-size-lg);
+}
+
+.module-content {
+  background-color: var(--color-card);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.content-html h3 {
+  color: var(--color-text);
+  margin: var(--spacing-lg) 0 var(--spacing-sm) 0;
+  font-size: var(--font-size-xl);
+}
+
+.content-html h3:first-child {
+  margin-top: 0;
+}
+
+.content-html ul {
+  margin-left: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+.content-html li {
+  margin-bottom: var(--spacing-sm);
+  line-height: 1.5;
+}
+
+.module-actions {
+  text-align: center;
+}
+
+.quiz-button {
+  display: inline-block;
+  background-color: var(--color-success);
+  color: white;
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--border-radius-md);
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color var(--transition-fast);
+  border: none;
+  cursor: pointer;
+  font-size: var(--font-size-md);
+}
+
+.quiz-button:hover {
+  background-color: var(--color-success-dark);
+}
+
+.quiz-section {
+  margin-top: var(--spacing-2xl);
+}
+
+.quiz-section h3 {
+  color: var(--color-text);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+  font-size: var(--font-size-xl);
+}
+
+.back-to-content-btn {
+  display: block;
+  margin: var(--spacing-lg) auto 0;
+  background-color: var(--color-text-light);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  font-size: var(--font-size-sm);
+}
+
+.back-to-content-btn:hover {
+  background-color: var(--color-text);
+}
+
+@media (max-width: 768px) {
+  .module-details {
+    padding: var(--spacing-sm);
+  }
+  
+  .module-content {
+    padding: var(--spacing-md);
+  }
+  
+  .content-html ul {
+    margin-left: var(--spacing-md);
+  }
+}

@@ -1,0 +1,19 @@
+/* src/styles/Footer.css */
+.footer {
+  background-color: var(--color-card);
+  text-align: center;
+  padding: var(--spacing-lg);
+  margin-top: auto;
+  border-top: 1px solid var(--color-border);
+}
+
+.footer p {
+  color: var(--color-text-light);
+  font-size: var(--font-size-sm);
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: var(--spacing-md);
+  }
+}

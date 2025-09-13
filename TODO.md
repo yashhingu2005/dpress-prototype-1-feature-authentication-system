@@ -1,0 +1,6 @@
+- [x] Update src/db.sql to add institution_code text field to institutions table
+- [x] Modify src/context/AuthContext.js to fetch and store institution_id in state
+- [x] Update src/components/ProtectedRoute.js to redirect to institution setup if institution_id is null
+- [x] Create new page src/pages/InstitutionSetup.js with form to enter code, validate, update profile, redirect
+- [x] Add route for /institution-setup in src/App.js
+- [x] Update src/pages/Profile.js to fetch and display institution name

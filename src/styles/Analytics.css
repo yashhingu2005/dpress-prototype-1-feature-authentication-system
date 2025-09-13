@@ -1,0 +1,186 @@
+/* src/styles/Analytics.css */
+.analytics {
+    background-color: var(--color-card);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: var(--spacing-xl);
+  }
+  
+  .analytics h3 {
+    color: var(--color-text);
+    margin-bottom: var(--spacing-lg);
+    font-size: var(--font-size-xl);
+    border-bottom: 2px solid var(--color-border);
+    padding-bottom: var(--spacing-sm);
+  }
+  
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+  }
+  
+  .metric-card {
+    background-color: var(--color-background);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-fast);
+  }
+  
+  .metric-card:hover {
+    transform: translateY(-3px);
+  }
+  
+  .metric-value {
+    font-size: var(--font-size-2xl);
+    font-weight: bold;
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-xs);
+  }
+  
+  .metric-label {
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+  }
+  
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+  }
+  
+  .chart-card {
+    background-color: var(--color-background);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .chart-card h4 {
+    color: var(--color-text);
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-lg);
+  }
+  
+  .status-chart {
+    display: flex;
+    height: 40px;
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+  }
+  
+  .chart-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 500;
+    font-size: var(--font-size-sm);
+    transition: width var(--transition-normal);
+  }
+  
+  .safe-bar {
+    background-color: var(--color-success);
+  }
+  
+  .sos-bar {
+    background-color: var(--color-emergency);
+  }
+  
+  .unknown-bar {
+    background-color: var(--color-text-light);
+  }
+  
+  .trend-chart {
+    display: flex;
+    align-items: flex-end;
+    height: 200px;
+    gap: var(--spacing-sm);
+    padding: 0 var(--spacing-sm);
+  }
+  
+  .trend-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    height: 100%;
+  }
+  
+  .trend-bar {
+    width: 20px;
+    background-color: var(--color-primary);
+    border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
+    transition: height var(--transition-normal);
+  }
+  
+  .trend-label {
+    margin-top: var(--spacing-xs);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-light);
+  }
+  
+  .alert-analytics {
+    background-color: var(--color-background);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .alert-analytics h4 {
+    color: var(--color-text);
+    margin-bottom: var(--spacing-md);
+    font-size: var(--font-size-lg);
+  }
+  
+  .alert-table {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-xs);
+  }
+  
+  .alert-header, .alert-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+  }
+  
+  .alert-header {
+    background-color: var(--color-primary);
+    color: white;
+    font-weight: 500;
+  }
+  
+  .alert-row {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+  
+  .alert-row:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+  
+  @media (max-width: 768px) {
+    .metrics-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .charts-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .alert-header, .alert-row {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-xs);
+    }
+    
+    .trend-chart {
+      height: 150px;
+    }
+  }
