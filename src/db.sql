@@ -27,7 +27,7 @@ CREATE TABLE public.courses (
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   CONSTRAINT courses_pkey PRIMARY KEY (id),
-  CONSTRAINT courses_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.profiles(id)
+  CONSTRAINT courses_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.institutions(id)
 );
 CREATE TABLE public.devices (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -39,8 +39,8 @@ CREATE TABLE public.devices (
   last_active timestamp with time zone,
   created_at timestamp with time zone DEFAULT now(),
   CONSTRAINT devices_pkey PRIMARY KEY (id),
-  CONSTRAINT devices_client_id_fkey FOREIGN KEY (client_id) REFERENCES public.app_clients(id),
-  CONSTRAINT devices_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id)
+  CONSTRAINT devices_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.profiles(id),
+  CONSTRAINT devices_client_id_fkey FOREIGN KEY (client_id) REFERENCES public.app_clients(id)
 );
 CREATE TABLE public.drill_attendance (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -94,7 +94,6 @@ CREATE TABLE public.incident_reports (
 CREATE TABLE public.institutions (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
   name text NOT NULL,
-  institution_code text UNIQUE,
   type text DEFAULT 'school'::text CHECK (type = ANY (ARRAY['school'::text, 'college'::text, 'other'::text])),
   address text,
   contact_email text,
@@ -142,9 +141,9 @@ CREATE TABLE public.profiles (
   created_at timestamp with time zone DEFAULT now(),
   updated_at timestamp with time zone DEFAULT now(),
   CONSTRAINT profiles_pkey PRIMARY KEY (id),
-  CONSTRAINT profiles_created_via_client_fkey FOREIGN KEY (created_via_client) REFERENCES public.app_clients(id),
   CONSTRAINT profiles_institution_id_fkey FOREIGN KEY (institution_id) REFERENCES public.institutions(id),
-  CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id)
+  CONSTRAINT profiles_id_fkey FOREIGN KEY (id) REFERENCES auth.users(id),
+  CONSTRAINT profiles_created_via_client_fkey FOREIGN KEY (created_via_client) REFERENCES public.app_clients(id)
 );
 CREATE TABLE public.quiz_attempts (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
