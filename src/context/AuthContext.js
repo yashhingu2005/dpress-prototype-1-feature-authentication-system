@@ -1,6 +1,6 @@
-
 // src/context/AuthContext.js
-import React, { createContext, useContext, useState, useEffect } from 'react';
+
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react'; // 1. Import useCallback
 import { supabase } from '../SupabaseClient';
 
 // Create context
@@ -23,132 +23,110 @@ export const AuthProvider = ({ children }) => {
   const [role, setRole] = useState(null);
   const [institutionId, setInstitutionId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const isMounted = useRef(true);
 
-  const fetchProfileData = async (userId) => {
-    console.log('Fetching profile data for userId:', userId);
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('role, institution_id')
-      .eq('id', userId)
-      .single();
+  // 2. Wrap fetchProfileData in useCallback
+  const fetchProfileData = useCallback(async (userId) => {
+    console.log(`Fetching profile data for userId: ${userId}`);
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role, institution_id')
+        .eq('id', userId)
+        .single();
+      
+      console.log('Database query has finished. Data:', data);
 
-    if (error) {
-      console.error('Error fetching profile data:', error);
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+      return { role: data?.role, institutionId: data?.institution_id };
+    } catch (error) {
+      console.error('Error fetching profile data:', error.message);
       return { role: null, institutionId: null };
     }
-    console.log('Fetched profile data:', data);
-    return { role: data?.role ?? null, institutionId: data?.institution_id ?? null };
-  };
+  }, []); // Empty dependency array as it has no external dependencies
+
+  // 3. Wrap updateAuthStateAndProfile in useCallback
+  const updateAuthStateAndProfile = useCallback(async (session) => {
+    if (!isMounted.current) return;
+    setUser(session?.user ?? null);
+    setIsAuthenticated(!!session);
+
+    if (session?.user?.id) {
+      const profileData = await fetchProfileData(session.user.id);
+      console.log('Profile fetch function has returned. Moving to set state.');
+      if (isMounted.current) {
+        setRole(profileData.role);
+        setInstitutionId(profileData.institutionId);
+      }
+    } else {
+      if (isMounted.current) {
+        setRole(null);
+        setInstitutionId(null);
+      }
+    }
+    if (isMounted.current) {
+      setLoading(false);
+    }
+  }, [fetchProfileData]); // Dependency on fetchProfileData
 
   // Listen to auth state changes
   useEffect(() => {
-    const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      setIsAuthenticated(!!session);
+    isMounted.current = true;
+    setLoading(true);
 
-      if (session?.user?.id) {
-        const { role, institutionId } = await fetchProfileData(session.user.id);
-        setRole(role);
-        setInstitutionId(institutionId);
-        console.log('Session: set role:', role, 'institutionId:', institutionId);
-      } else {
-        setRole(null);
-        setInstitutionId(null);
-        console.log('Session: no user, set role and institutionId to null');
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (isMounted.current) {
+        updateAuthStateAndProfile(session);
       }
+    });
 
-      setLoading(false);
+    return () => {
+      isMounted.current = false;
+      subscription.unsubscribe();
     };
+  }, [updateAuthStateAndProfile]); // 4. Add the function to the dependency array
 
+  // ... (register, login, logout, and other functions remain the same) ...
 
-    getSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setUser(session?.user ?? null);
-      setIsAuthenticated(!!session);
-
-      if (session?.user?.id) {
-        const { role, institutionId } = await fetchProfileData(session.user.id);
-        setRole(role);
-        setInstitutionId(institutionId);
-      } else {
-        setRole(null);
-        setInstitutionId(null);
-      }
-
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  // Register function
   const register = async (email, password, role, name) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          role,
-          name
-        }
-      }
-    });
-
+    const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) throw error;
-
-    // Set user immediately for navigation
     if (data.user) {
-      setUser(data.user);
-      setIsAuthenticated(true);
-      // Fetch profile data
-      const { role, institutionId } = await fetchProfileData(data.user.id);
-      setRole(role);
-      setInstitutionId(institutionId);
+      await supabase.from('profiles').insert({ id: data.user.id, role: role, name: name });
+      await updateAuthStateAndProfile(data.session);
     }
-
     return data.user;
   };
 
-  // Login function
   const login = async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
-
-    // Set user immediately for navigation
     if (data.user) {
-      setUser(data.user);
-      setIsAuthenticated(true);
-      // Fetch profile data
-      const { role, institutionId } = await fetchProfileData(data.user.id);
-      setRole(role);
-      setInstitutionId(institutionId);
+      await updateAuthStateAndProfile(data.session);
     }
-
     return data.user;
   };
 
-  // Logout function
   const logout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
-    setUser(null);
-    setIsAuthenticated(false);
-    setRole(null);
-    setInstitutionId(null);
+    if (isMounted.current) {
+      setUser(null);
+      setIsAuthenticated(false);
+      setRole(null);
+      setInstitutionId(null);
+    }
   };
 
-  // Function to update institution ID
   const updateInstitutionId = (newInstitutionId) => {
-    setInstitutionId(newInstitutionId);
+    if (isMounted.current) {
+      setInstitutionId(newInstitutionId);
+    }
   };
 
-  // Context value
+
   const value = {
     user,
     isAuthenticated,
@@ -163,7 +141,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {!loading ? children : <div>Loading authentication...</div>}
     </AuthContext.Provider>
   );
 };

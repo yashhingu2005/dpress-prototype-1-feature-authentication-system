@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../SupabaseClient';
 import { useAuth } from '../context/AuthContext';
-
+console.log('opeaning institution page')
 const InstitutionSetup = () => {
+  
   const [institutionCode, setInstitutionCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);

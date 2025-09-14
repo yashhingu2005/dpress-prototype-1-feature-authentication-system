@@ -11,10 +11,11 @@ import AdminDashboard from './pages/AdminDashboard';
 import ModuleDetails from './pages/ModuleDetails';
 import InstitutionSetup from './pages/InstitutionSetup';
 import { AppProvider } from './AppContext';
-import { AuthProvider } from './context/AuthContext'; 
+import { AuthProvider } from './context/AuthContext';
 import AuthPage from './pages/AuthPage';
-import ProtectedRoute from './components/ProtectedRoute';   
-import NotFound from './pages/NotFound';                   
+import ProtectedRoute from './components/ProtectedRoute';
+import NotFound from './pages/NotFound';
+import { supabase } from './SupabaseClient'; // Import to establish connection on app load
 
 function App() {
   return (
@@ -76,7 +77,7 @@ function App() {
           </div>
         </Router>
       </AppProvider>
-    </AuthProvider> 
+    </AuthProvider>
   );
 }
 

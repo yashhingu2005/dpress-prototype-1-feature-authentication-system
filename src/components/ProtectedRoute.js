@@ -22,7 +22,7 @@ const ProtectedRoute = ({ children, requiredRole = null }) => {
   }
 
   // Redirect to institution setup if institution not set
-  if (institutionId === null) {
+  if (!institutionId) {
     return <Navigate to="/institution-setup" replace />;
   }
 

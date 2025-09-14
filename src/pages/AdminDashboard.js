@@ -1,37 +1,57 @@
 // src/pages/AdminDashboard.js
 import React, { useState, useEffect } from 'react';
-import { adminData } from '../assets/mockData/mockData';
 import SendAlert from '../components/SendAlert';
 import AdminHeatmap from '../components/AdminHeatmap';
 import Analytics from '../components/Analytics';
 import '../styles/AdminDashboard.css';
+import { supabase } from '../SupabaseClient';
 
 const AdminDashboard = () => {
-  const [users, setUsers] = useState(adminData.users);
-  const [alerts] = useState(adminData.alerts);
+  const [users, setUsers] = useState([]);
+  const [alerts, setAlerts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('monitoring'); // 'monitoring' or 'analytics'
 
-  // Simulate real-time updates
   useEffect(() => {
-    const interval = setInterval(() => {
-      // Randomly update a user's status to simulate real-time changes
-      const randomIndex = Math.floor(Math.random() * users.length);
-      const randomStatus = Math.random() > 0.7 ? 'sos' : 
-                          Math.random() > 0.5 ? 'safe' : 'unknown';
-      
-      setUsers(prevUsers => {
-        const updatedUsers = [...prevUsers];
-        updatedUsers[randomIndex] = {
-          ...updatedUsers[randomIndex],
-          status: randomStatus,
-          lastSeen: 'just now'
-        };
-        return updatedUsers;
-      });
-    }, 5000); // Update every 5 seconds
+    const fetchUsers = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('*');
 
-    return () => clearInterval(interval);
-  }, [users.length]);
+        if (error) {
+          setError(error.message);
+        } else {
+          setUsers(data);
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchAlerts = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('alerts')
+          .select('*');
+
+        if (error) {
+          console.error("Error fetching alerts:", error.message);
+        } else {
+          setAlerts(data);
+        }
+      } catch (err) {
+        console.error("Error fetching alerts:", err.message);
+      }
+    };
+
+    fetchUsers();
+    fetchAlerts();
+  }, []);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -49,30 +69,38 @@ const AdminDashboard = () => {
     }
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div className="admin-dashboard">
       <h2>Admin Dashboard</h2>
-      
+
       <div className="admin-tabs">
-        <button 
+        <button
           className={activeTab === 'monitoring' ? 'tab-active' : ''}
           onClick={() => setActiveTab('monitoring')}
         >
           Monitoring
         </button>
-        <button 
+        <button
           className={activeTab === 'analytics' ? 'tab-active' : ''}
           onClick={() => setActiveTab('analytics')}
         >
           Analytics
         </button>
       </div>
-      
+
       {activeTab === 'monitoring' ? (
         <div className="dashboard-sections">
           <div className="left-column">
             <SendAlert />
-            
+
             <div className="users-section">
               <h3>Real-time User Monitoring</h3>
               <div className="users-list">
@@ -81,9 +109,9 @@ const AdminDashboard = () => {
                     <div className="user-info">
                       <h4>{user.name}</h4>
                       <p>Location: {user.location}</p>
-                      <p>Last seen: {user.lastSeen}</p>
+                      <p>Last seen: {user.last_seen}</p>
                     </div>
-                    <div 
+                    <div
                       className="status-indicator"
                       style={{ backgroundColor: getStatusColor(user.status) }}
                     >
@@ -94,10 +122,10 @@ const AdminDashboard = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="right-column">
             <AdminHeatmap />
-            
+
             <div className="alerts-section">
               <h3>Recent System Alerts</h3>
               <div className="alerts-list">

@@ -49,6 +49,10 @@ const Quiz = ({ questions, onQuizComplete }) => {
     setAnsweredQuestions({});
   };
 
+  if (!questions || questions.length === 0) {
+    return <div>No quiz questions available for this module.</div>;
+  }
+
   if (showResult) {
     return (
       <div className="quiz-results">
