@@ -1,12 +1,13 @@
 // src/pages/AdminDashboard.js
 import React, { useState, useEffect } from 'react';
 import SendAlert from '../components/SendAlert';
-import AdminHeatmap from '../components/AdminHeatmap';
 import Analytics from '../components/Analytics';
 import '../styles/AdminDashboard.css';
 import { supabase } from '../SupabaseClient';
+import { useAuth } from '../context/AuthContext';
 
 const AdminDashboard = () => {
+  const { institutionId } = useAuth();
   const [users, setUsers] = useState([]);
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,12 +15,24 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('monitoring'); // 'monitoring' or 'analytics'
 
   useEffect(() => {
+    console.log('Institution ID:', institutionId);
     const fetchUsers = async () => {
       setLoading(true);
       try {
+        if (!institutionId) {
+          setError('Institution ID not available');
+          setLoading(false);
+          return;
+        }
         const { data, error } = await supabase
-          .from('users')
-          .select('*');
+          .from('profiles')
+          .select('*')
+          .eq('role', 'student')
+          .eq('institution_id', institutionId);
+
+
+        console.log(institutionId)
+        console.log(users)
 
         if (error) {
           setError(error.message);
@@ -35,9 +48,14 @@ const AdminDashboard = () => {
 
     const fetchAlerts = async () => {
       try {
+        if (!institutionId) {
+          console.error("Institution ID not available for alerts");
+          return;
+        }
         const { data, error } = await supabase
-          .from('alerts')
-          .select('*');
+          .from('notifications')
+          .select('*')
+          .eq('institution_id', institutionId);
 
         if (error) {
           console.error("Error fetching alerts:", error.message);
@@ -51,7 +69,7 @@ const AdminDashboard = () => {
 
     fetchUsers();
     fetchAlerts();
-  }, []);
+  }, [institutionId]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -107,15 +125,16 @@ const AdminDashboard = () => {
                 {users.map(user => (
                   <div key={user.id} className="user-card">
                     <div className="user-info">
-                      <h4>{user.name}</h4>
-                      <p>Location: {user.location}</p>
-                      <p>Last seen: {user.last_seen}</p>
+                      <h4>{user.full_name}</h4>
+                      <p>Email: {user.email}</p>
+                      <p>Role: {user.role}</p>
+                      <p>Last updated: {new Date(user.updated_at).toLocaleString()}</p>
                     </div>
                     <div
                       className="status-indicator"
-                      style={{ backgroundColor: getStatusColor(user.status) }}
+                      style={{ backgroundColor: getStatusColor('safe') }}
                     >
-                      {getStatusText(user.status)}
+                      {getStatusText('safe')}
                     </div>
                   </div>
                 ))}
@@ -124,16 +143,14 @@ const AdminDashboard = () => {
           </div>
 
           <div className="right-column">
-            <AdminHeatmap />
-
             <div className="alerts-section">
               <h3>Recent System Alerts</h3>
               <div className="alerts-list">
                 {alerts.map(alert => (
                   <div key={alert.id} className="alert-item">
-                    <p className="alert-message">{alert.message}</p>
+                    <p className="alert-message">{alert.title}: {alert.message}</p>
                     <p className="alert-time">
-                      {new Date(alert.timestamp).toLocaleString()}
+                      {new Date(alert.created_at).toLocaleString()}
                     </p>
                   </div>
                 ))}

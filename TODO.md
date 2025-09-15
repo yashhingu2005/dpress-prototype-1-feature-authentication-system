@@ -1,3 +1,6 @@
-//according to db.sql create mock cources and quizes and quizes questions understand the foreign keys and make shure they are linked properly also understand the overall project to follow the quizes and cources // done //
+# TODO: Store Quiz Results in quiz_attempts Table
 
-//according to the database remove the mock elements and add the correct ones from the database// working //
+## Steps to Complete
+- [x] Update src/components/Quiz.js to pass answers data to onQuizComplete callback
+- [x] Update src/pages/ModuleDetails.js to store quizId and startedAt, and insert quiz attempt on completion
+- [ ] Test quiz completion to verify database insertion

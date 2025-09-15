@@ -1,36 +1,92 @@
-import React from 'react';
-import { adminData } from '../assets/mockData/mockData';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../SupabaseClient';
+import { useAuth } from '../context/AuthContext';
 import '../styles/Analytics.css';
 
 const Analytics = () => {
-  const { users } = adminData;
-  
-  // Calculate metrics from mock data
-  const totalUsers = users.length;
-  const safeUsers = users.filter(user => user.status === 'safe').length;
-  const sosUsers = users.filter(user => user.status === 'sos').length;
-  const unknownUsers = users.filter(user => user.status === 'unknown').length;
-  
-  const safetyRate = Math.round((safeUsers / totalUsers) * 100);
-  const responseRate = Math.round(((safeUsers + unknownUsers) / totalUsers) * 100);
-  
-  // Mock data for preparedness index over time
+  const { institutionId } = useAuth();
+  const [profiles, setProfiles] = useState([]);
+  const [incidentReports, setIncidentReports] = useState([]);
+  const [drillAttendance, setDrillAttendance] = useState([]);
+  const [feedback, setFeedback] = useState([]);
+  const [quizAttempts, setQuizAttempts] = useState([]);
+  const [drills, setDrills] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!institutionId) {
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      try {
+        const profilesRes = await supabase.from('profiles').select('*').eq('institution_id', institutionId).eq('role', 'student');
+        const studentIds = (profilesRes.data || []).map(p => p.id);
+
+        const [incidentRes, attendanceRes, feedbackRes, quizRes, drillsRes] = await Promise.all([
+          supabase.from('incident_reports').select('*').in('reporter_id', studentIds),
+          supabase.from('drill_attendance').select('*').in('user_id', studentIds),
+          supabase.from('feedback').select('*').in('user_id', studentIds),
+          supabase.from('quiz_attempts').select('*').in('user_id', studentIds),
+          supabase.from('drills').select('*').eq('institution_id', institutionId)
+        ]);
+
+        setProfiles(profilesRes.data || []);
+        setIncidentReports(incidentRes.data || []);
+        setDrillAttendance(attendanceRes.data || []);
+        setFeedback(feedbackRes.data || []);
+        setQuizAttempts(quizRes.data || []);
+        setDrills(drillsRes.data || []);
+      } catch (err) {
+        console.error('Error fetching data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [institutionId]);
+
+  // Calculate metrics
+  const totalUsers = profiles.length;
+  const sosUsers = incidentReports.filter(r => r.severity === 'high').length;
+  const safeUsers = totalUsers - sosUsers;
+  const unknownUsers = 0; // Assuming no unknown
+
+  const safetyRate = totalUsers > 0 ? Math.round((safeUsers / totalUsers) * 100) : 0;
+  const responseRate = drillAttendance.length > 0 ? Math.round((drillAttendance.filter(a => a.status === 'present').length / drillAttendance.length) * 100) : 0;
+
+  // Preparedness index: average score from quiz attempts
+  const avgScore = quizAttempts.length > 0 ? quizAttempts.reduce((sum, q) => sum + (q.score / q.max_score), 0) / quizAttempts.length * 100 : 0;
+  const preparednessIndex = Math.round(avgScore);
+
   const preparednessData = [
-    { day: 'Mon', index: 65 },
-    { day: 'Tue', index: 72 },
-    { day: 'Wed', index: 68 },
-    { day: 'Thu', index: 75 },
-    { day: 'Fri', index: 82 },
-    { day: 'Sat', index: 78 },
-    { day: 'Sun', index: 85 }
+    { day: 'Mon', index: preparednessIndex },
+    { day: 'Tue', index: preparednessIndex },
+    { day: 'Wed', index: preparednessIndex },
+    { day: 'Thu', index: preparednessIndex },
+    { day: 'Fri', index: preparednessIndex },
+    { day: 'Sat', index: preparednessIndex },
+    { day: 'Sun', index: preparednessIndex }
   ];
-  
-  // Mock data for alert responses
-  const alertResponseData = [
-    { alert: 'Earthquake Drill', participants: 85, date: '2024-09-10' },
-    { alert: 'Fire Safety', participants: 72, date: '2024-09-08' },
-    { alert: 'Weather Warning', participants: 90, date: '2024-09-12' }
-  ];
+
+  // Alert response data from drills and attendance
+  const alertResponseData = drills.map(drill => {
+    const attendanceForDrill = drillAttendance.filter(a => a.drill_id === drill.id);
+    const total = attendanceForDrill.length;
+    const present = attendanceForDrill.filter(a => a.status === 'present').length;
+    const participants = total > 0 ? Math.round((present / total) * 100) : 0;
+    return {
+      alert: drill.title,
+      participants,
+      date: new Date(drill.scheduled_at).toISOString().split('T')[0]
+    };
+  });
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="analytics">

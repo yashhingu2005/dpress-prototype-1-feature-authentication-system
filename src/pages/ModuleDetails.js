@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../SupabaseClient';
+import { useAuth } from '../context/AuthContext';
 import Quiz from '../components/Quiz';
 import '../styles/ModuleDetails.css';
 
 const ModuleDetails = () => {
   const { moduleId } = useParams();
+  const { user } = useAuth();
   const [module, setModule] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [showQuiz, setShowQuiz] = useState(false);
+  const [quizId, setQuizId] = useState(null);
+  const [startedAt, setStartedAt] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -38,6 +42,9 @@ const ModuleDetails = () => {
             console.error("Error fetching quiz:", quizError.message);
             setQuestions([]);
           } else {
+            setQuizId(quizData.id);
+            setStartedAt(new Date().toISOString());
+
             // Fetch quiz questions
             const { data: questionsData, error: questionsError } = await supabase
               .from('quiz_questions')
@@ -68,9 +75,33 @@ const ModuleDetails = () => {
     fetchModuleDetails();
   }, [moduleId]);
 
-  const handleQuizComplete = (score, total) => {
-    // This function could be used to update user progress in the future
-    console.log(`Quiz completed! Score: ${score}/${total}`);
+  const handleQuizComplete = async (score, total, answers) => {
+    if (!user || !quizId) {
+      console.error('User not authenticated or quiz not loaded');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('quiz_attempts')
+        .insert({
+          quiz_id: quizId,
+          user_id: user.id,
+          score,
+          max_score: total,
+          answers: JSON.stringify(answers),
+          started_at: startedAt,
+          submitted_at: new Date().toISOString()
+        });
+
+      if (error) {
+        console.error('Error saving quiz attempt:', error);
+      } else {
+        console.log('Quiz attempt saved successfully:', data);
+      }
+    } catch (err) {
+      console.error('Error saving quiz attempt:', err);
+    }
   };
 
   if (loading) {

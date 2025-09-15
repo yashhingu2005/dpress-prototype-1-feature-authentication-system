@@ -36,7 +36,7 @@ const Quiz = ({ questions, onQuizComplete }) => {
     } else {
       setShowResult(true);
       if (onQuizComplete) {
-        onQuizComplete(score + (isCorrect ? 1 : 0), questions.length);
+        onQuizComplete(score + (isCorrect ? 1 : 0), questions.length, answeredQuestions);
       }
     }
   };

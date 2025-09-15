@@ -7,6 +7,8 @@ import '../styles/Profile.css';
 const Profile = () => {
   const { user, role, institutionId } = useAuth();
   const [institutionName, setInstitutionName] = useState('');
+  const [preparednessIndex, setPreparednessIndex] = useState(0);
+  const [institutionPreparednessIndex, setInstitutionPreparednessIndex] = useState(0);
 
   useEffect(() => {
     const fetchInstitution = async () => {
@@ -26,6 +28,67 @@ const Profile = () => {
     fetchInstitution();
   }, [institutionId]);
 
+  useEffect(() => {
+    const fetchPreparednessIndices = async () => {
+      if (!user || !institutionId) return;
+
+      try {
+        // Fetch user's quiz attempts
+        const { data: userAttempts, error: userError } = await supabase
+          .from('quiz_attempts')
+          .select('score, max_score')
+          .eq('user_id', user.id);
+
+        if (userError) {
+          console.error('Error fetching user quiz attempts:', userError);
+          setPreparednessIndex(0);
+        } else if (userAttempts && userAttempts.length > 0) {
+          const totalScore = userAttempts.reduce((acc, attempt) => acc + (attempt.score || 0), 0);
+          const totalMaxScore = userAttempts.reduce((acc, attempt) => acc + (attempt.max_score || 0), 0);
+          setPreparednessIndex(totalMaxScore > 0 ? Math.round((totalScore / totalMaxScore) * 100) : 0);
+        } else {
+          setPreparednessIndex(0);
+        }
+
+        // Fetch user ids in institution
+        const { data: profiles, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('institution_id', institutionId);
+
+        if (profilesError) {
+          console.error('Error fetching profiles:', profilesError);
+          setInstitutionPreparednessIndex(0);
+        } else {
+          const userIds = profiles.map(profile => profile.id);
+
+          // Fetch institution's quiz attempts
+          const { data: institutionAttempts, error: institutionError } = await supabase
+            .from('quiz_attempts')
+            .select('score, max_score')
+            .in('user_id', userIds);
+
+          if (institutionError) {
+            console.error('Error fetching institution quiz attempts:', institutionError);
+            setInstitutionPreparednessIndex(0);
+          } else if (institutionAttempts && institutionAttempts.length > 0) {
+            const totalInstScore = institutionAttempts.reduce((acc, attempt) => acc + (attempt.score || 0), 0);
+            const totalInstMaxScore = institutionAttempts.reduce((acc, attempt) => acc + (attempt.max_score || 0), 0);
+            setInstitutionPreparednessIndex(totalInstMaxScore > 0 ? Math.round((totalInstScore / totalInstMaxScore) * 100) : 0);
+          } else {
+            setInstitutionPreparednessIndex(0);
+          }
+        }
+      } catch (err) {
+        console.error('Error calculating preparedness indices:', err);
+        setPreparednessIndex(0);
+        setInstitutionPreparednessIndex(0);
+      }
+    };
+
+    fetchPreparednessIndices();
+  }, [user, institutionId]);
+
   // If no user is found (shouldn't happen since this is a protected route)
   if (!user) {
     return (
@@ -38,8 +101,6 @@ const Profile = () => {
 
   const { user_metadata, email } = user;
   const name = user_metadata?.name || 'User';
-  const preparednessIndex = 0; // Placeholder, as Supabase auth doesn't store this
-  const institutionPreparednessIndex = 0;
   const badges = [];
   const certificates = [];
 
