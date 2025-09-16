@@ -5,6 +5,7 @@ import Header from './Header';
 import Footer from './Footer';
 import EarlyWarning from './EarlyWarning';
 import EmergencyInterface from './EmergencyInterface';
+import ChatbotBubble from './ChatbotBubble';
 import '../styles/Layout.css';
 
 const Layout = ({ children }) => {
@@ -27,6 +28,7 @@ const Layout = ({ children }) => {
         {appMode === 'disaster' ? <EmergencyInterface /> : children}
       </main>
       {appMode !== 'disaster' && <Footer />}
+      <ChatbotBubble />
     </div>
   );
 };
