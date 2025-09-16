@@ -17,7 +17,7 @@ const Header = () => {
     <header className={`header ${appMode}`}>
       <nav className="nav">
         <div className="logo">
-          <Link to="/">DPRES</Link>
+          <Link to="/">SAHAY</Link>
         </div>
         
         {isAuthenticated ? (

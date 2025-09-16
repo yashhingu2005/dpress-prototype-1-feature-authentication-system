@@ -39,6 +39,14 @@ const Learn = () => {
     return <div>Error: {error}</div>;
   }
 
+  // Helper function to extract YouTube video ID from URL
+  const getYouTubeVideoId = (url) => {
+    if (!url) return null;
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  };
+
   return (
     <div className="learn-page">
       <h2>Learning Center</h2>
@@ -53,6 +61,7 @@ const Learn = () => {
               <Link to={`/learn/${module.id}`} className="module-link">
                 Start Learning
               </Link>
+              
             </div>
           </div>
         ))}

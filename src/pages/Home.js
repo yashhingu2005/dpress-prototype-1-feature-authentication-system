@@ -5,7 +5,7 @@ const Home = () => {
     return (
       <div className="home-page">
         <div className="hero-section">
-          <h1>Disaster Preparedness & Response Education System</h1>
+          <h1>Student-Assisted Hazards Awareness and Youth preparedness system</h1>
           <p>Empowering communities with knowledge and tools for disaster resilience</p>
           <div className="hero-buttons">
             <Link to="/learn" className="cta-button primary">Start Learning</Link>
