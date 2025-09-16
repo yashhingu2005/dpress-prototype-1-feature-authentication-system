@@ -91,12 +91,19 @@ export const AuthProvider = ({ children }) => {
   // ... (register, login, logout, and other functions remain the same) ...
 
   const register = async (email, password, role, name) => {
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          role: role,
+          name: name,
+          email: email
+        },
+      },
+    });
     if (error) throw error;
-    if (data.user) {
-      await supabase.from('profiles').insert({ id: data.user.id, role: role, name: name });
-      await updateAuthStateAndProfile(data.session);
-    }
+    console.log(data.user)
     return data.user;
   };
 

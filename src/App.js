@@ -1,4 +1,3 @@
-// src/App.js
 import './App.css';
 import './styles/DesignSystem.css';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
@@ -22,7 +21,7 @@ function App() {
     <AuthProvider>
       <AppProvider>
         <Router>
-          <div className="App">
+          <div className="Sahay">
             <Layout>
               <Routes>
                 {/* Public route */}
